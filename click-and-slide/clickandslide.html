@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click and slide</title>
+  <style>
+    body {
+      background-color: black;
+    }
+
+    button {
+      margin: 0 5px;
+    }
+
+    .flex1 {
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+    }
+
+    td,
+    tr,
+    table {
+      padding: 0;
+      border-collapse: collapse;
+    }
+
+    .obraz {
+      background-image: url("img/jonkler.jpeg");
+      background-size: 300px 300px;
+    }
+
+    #obrazek {
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      border: 1px solid whitesmoke;
+    }
+
+    #smallImage {
+      width: 150px;
+      height: 150px;
+      overflow-y: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      margin: 0 10px;
+    }
+
+    #smallImage img {
+      width: 150px;
+      height: 150px;
+    }
+
+    #leftArrow {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    #rightArrow {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    #chooseImage {
+      align-items: center;
+    }
+
+    #timer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #saves {
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+      margin: 20px 0 0 0;
+    }
+
+    button {
+      font-size: 15px;
+      font-weight: 600;
+      background-color: whitesmoke;
+      border: none;
+      border-radius: 10px;
+      padding: 5px 10px;
+    }
+
+    #loadData {
+      background-color: black;
+      border-radius: 15px;
+    }
+
+    #loadData *:not(button) {
+      color: white;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin: 10px 0 0 0;
+    }
+
+    #gameTime {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mainDiv">
+    <div id="chooseImage" class="flex1">
+      <div id="leftArrow">&#8592;</div>
+      <div id="smallImage">
+        <img src="img/jonkler.jpeg" alt="1" />
+        <img src="img/it.jpg" alt="2" />
+        <img src="img/terrifier.jpg" alt="3" />
+        <img src="img/jonkler.jpeg" alt="1" />
+      </div>
+      <div id="rightArrow">&#8594;</div>
+    </div>
+    <div id="timer">
+      <img id="0" src="img/cyferki/c0.gif" alt="0" />
+      <img id="1" src="img/cyferki/c0.gif" alt="0" />
+      <img src="img/cyferki/colon.gif" alt=":" />
+      <img id="2" src="img/cyferki/c0.gif" alt="0" />
+      <img id="3" src="img/cyferki/c0.gif" alt="0" />
+      <img src="img/cyferki/colon.gif" alt=":" />
+      <img id="4" src="img/cyferki/c0.gif" alt="0" />
+      <img id="5" src="img/cyferki/c0.gif" alt="0" />
+      <img src="img/cyferki/dot.gif" alt="." />
+      <img id="6" src="img/cyferki/c0.gif" alt="0" />
+      <img id="7" src="img/cyferki/c0.gif" alt="0" />
+      <img id="8" src="img/cyferki/c0.gif" alt="0" />
+    </div>
+    <div id="saves"></div>
+    <div id="time"></div>
+    <div id="obrazek" class="obraz"></div>
+    <div class="flex1" id="container"></div>
+  </div>
+  <dialog id="loadData">
+    <h2>Czy chcesz załadować ten zapis</h2>
+    <p id="gameTime"></p>
+    <div id="miniature"></div>
+    <div class="row">
+      <button id="cancel">Nie</button>
+      <button id="confirm">Tak</button>
+    </div>
+  </dialog>
+  <script>
+    let app = {
+      elapsedTime: 0,
+      timerStart: null,
+      timerInterval: null,
+      winningBoard: [],
+      opp: 0,
+      imageDiv: document.getElementById("obrazek"),
+      image: document.getElementById("smallImage"),
+      game: {
+        size: 300,
+        board: [],
+        images: 0,
+        src: 'url("img/jonkler.jpeg")',
+      },
+      directions: [
+        [0, -1],
+        [-1, 0],
+        [0, 1],
+        [1, 0],
+      ],
+      generateButtons() {
+        for (let i = 0; i < 3; i++) {
+          const div = document.getElementById("saves");
+          const button = document.createElement("button");
+          button.innerText = `Save ${i + 1}`;
+          button.onclick = () => this.saveGame(i);
+          div.appendChild(button);
+        }
+        for (let i = 0; i < 3; i++) {
+          const div = document.getElementById("saves");
+          const loadButton = document.createElement("button");
+          loadButton.innerText = `Load ${i + 1}`;
+          loadButton.onclick = () => this.loadGame(i);
+          div.appendChild(loadButton);
+        }
+        for (let i = 3; i < 7; i++) {
+          const button = document.createElement("button");
+          button.setAttribute("id", "button" + i);
+          button.innerText = `${i} x ${i}`;
+          app.imageDiv.style.backgroundImage = app.game.src;
+          button.onclick = () => this.generateBoard(i);
+          document.getElementById("container").append(button);
+        }
+        app.image.scrollTo(0, 0);
+        const leftArrow = document.getElementById("leftArrow");
+        leftArrow.onclick = () => this.scrollImage(-150);
+        const rightArrow = document.getElementById("rightArrow");
+        rightArrow.onclick = () => this.scrollImage(150);
+      },
+      stopTimer() {
+        clearInterval(app.timerInterval);
+        app.timerInterval = null;
+      },
+
+      resetTimer() {
+        this.stopTimer();
+        app.timerStart = null;
+        this.updateTimerDisplay(0, 0, 0, 0);
+      },
+      startTimer() {
+        if (!app.timerStart) {
+          app.timerStart = Date.now();
+          app.timerInterval = setInterval(this.updateTimer, 1);
+        }
+      },
+
+      updateTimer() {
+        const currentTime = Date.now();
+        app.elapsedTime = currentTime - app.timerStart;
+        const hours = Math.floor(app.elapsedTime / (1000 * 60 * 60)) % 24;
+        const minutes = Math.floor(app.elapsedTime / (1000 * 60)) % 60;
+        const seconds = Math.floor(app.elapsedTime / 1000) % 60;
+        const milliseconds = app.elapsedTime % 1000;
+        app.updateTimerDisplay(hours, minutes, seconds, milliseconds);
+      },
+
+      updateTimerDisplay(hours, minutes, seconds, milliseconds) {
+        document.getElementById("0").src = this.setImage(
+          Math.floor(hours / 10) % 10
+        );
+        document.getElementById("1").src = this.setImage(hours % 10);
+        document.getElementById("2").src = this.setImage(
+          Math.floor(minutes / 10) % 10
+        );
+        document.getElementById("3").src = this.setImage(minutes % 10);
+        document.getElementById("4").src = this.setImage(
+          Math.floor(seconds / 10) % 10
+        );
+        document.getElementById("5").src = this.setImage(seconds % 10);
+        document.getElementById("6").src = this.setImage(
+          Math.floor(milliseconds / 100) % 10
+        );
+        document.getElementById("7").src = this.setImage(
+          Math.floor((milliseconds % 100) / 10)
+        );
+        document.getElementById("8").src = this.setImage(milliseconds % 10);
+      },
+      saveGame(slot) {
+        const data = {
+          board: app.game.board,
+          images: app.game.images,
+          wBoard: app.winningBoard,
+          src: app.game.src,
+          time: app.elapsedTime,
+        };
+        localStorage.setItem(`save${slot}`, JSON.stringify(data));
+        alert("Gra zapisana!");
+      },
+
+      loadGame(slot) {
+        const oldData = {
+          board: app.game.board,
+          images: app.game.images,
+          wBoard: app.winningBoard,
+          src: app.game.src,
+          time: app.elapsedTime,
+        };
+        const savedData = localStorage.getItem(`save${slot}`);
+        this.stopTimer()
+        if (savedData) {
+          const { board, images, wBoard, src, time } = JSON.parse(savedData);
+          app.game.board = board;
+          app.game.images = images;
+          app.winningBoard = wBoard;
+          app.game.src = src;
+          app.timerStart = time;
+          const dialog = document.getElementById("loadData");
+          dialog.showModal()
+          document.getElementById("gameTime").innerText = `Czas gry: ${this.formaTime(time)}`;
+          const miniature = document.getElementById("miniature");
+          this.drawBoard(miniature)
+          const cancel = document.getElementById("cancel")
+          cancel.onclick = () => {
+            dialog.close()
+            this.startTimer();
+          };
+          const confirm = document.getElementById("confirm")
+          confirm.onclick = () => {
+            dialog.close();
+            app.timerStart = Date.now() - time
+            app.timerInterval = setInterval(this.updateTimer, 1);
+            this.drawBoard(app.imageDiv)
+          }
+        } else {
+          alert("Nie zapisano gry na tym slocie");
+        }
+      },
+      formaTime(time) {
+        const hours = Math.floor(time / (1000 * 60 * 60)) % 24;
+        const minutes = Math.floor(time / (1000 * 60)) % 60;
+        const seconds = Math.floor(time / 1000) % 60;
+        const milliseconds = time % 1000;
+        return `${hours < 10 ? "0" + hours : hours}:${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}.${milliseconds < 100 ? "0" + milliseconds : milliseconds}`
+      },
+      scrollImage(value) {
+        app.game.images = app.image.scrollLeft / 150;
+        value > 0 ? app.opp++ : app.opp--;
+        switch (app.opp % 3) {
+          case 0:
+            app.game.src = 'url("img/jonkler.jpeg")';
+            break;
+          case 1:
+            app.game.src = 'url("img/it.jpg")';
+            break;
+          case 2:
+            app.game.src = 'url("img/terrifier.jpg")';
+            break;
+          case -1:
+            app.game.src = 'url("img/terrifier.jpg")';
+            break;
+          case -2:
+            app.game.src = 'url("img/it.jpg")';
+            break;
+        }
+
+        const interval = setInterval(() => {
+          if (app.image.scrollLeft === 0 && value === -150) {
+            app.image.scrollTo(600, 0);
+          } else if (app.image.scrollLeft === 450 && value === 150) {
+            app.image.scrollTo(0, 0);
+          }
+          app.image.scrollBy(value / 30, 0);
+          if (app.image.scrollLeft % 150 === 0) {
+            clearInterval(interval);
+          }
+        }, 30);
+      },
+      shuffle() {
+        let remainingMoves = 20 * app.game.images;
+        function performShuffle() {
+          if (remainingMoves <= 0) {
+            app.startTimer();
+            return;
+          }
+          let blankRow, blankCol;
+          for (let y = 0; y < app.game.images; y++) {
+            for (let x = 0; x < app.game.images; x++) {
+              if (app.game.board[y][x] === 0) {
+                blankRow = y;
+                blankCol = x;
+                break;
+              }
+            }
+          }
+          const randomDirection =
+            app.directions[Math.floor(Math.random() * app.directions.length)];
+          const newRow = blankRow + randomDirection[0];
+          const newCol = blankCol + randomDirection[1];
+          if (
+            newRow >= 0 &&
+            newRow < app.game.images &&
+            newCol >= 0 &&
+            newCol < app.game.images
+          ) {
+            app.game.board[blankRow][blankCol] = app.game.board[newRow][newCol];
+            app.game.board[newRow][newCol] = 0;
+            remainingMoves--;
+            app.drawBoard(app.imageDiv);
+          }
+          setTimeout(performShuffle, 30);
+        }
+        performShuffle();
+      },
+      boardsAreEqual(board1, board2) {
+        for (let i = 0; i < board1.length; i++) {
+          for (let j = 0; j < board1[i].length; j++) {
+            if (
+              board1[i][j][0] !== board2[i][j][0] ||
+              board1[i][j][1] !== board2[i][j][1]
+            ) {
+              return false;
+            }
+          }
+        }
+        return true;
+      },
+      generateBoard(i) {
+        this.resetTimer();
+        app.game.images = i;
+        app.game.board = [];
+        app.winningBoard = [];
+        for (let j = 0; j < i; j++) {
+          let row = [];
+          let row2 = [];
+          for (let x = 0; x < i; x++) {
+            row2.push([(-x * app.game.size) / i, (-j * app.game.size) / i]);
+            if (x === i - 1 && j === i - 1) {
+              row.push(0);
+            } else {
+              row.push([(-x * app.game.size) / i, (-j * app.game.size) / i]);
+            }
+          }
+          app.winningBoard.push(row2);
+          app.game.board.push(row);
+        }
+        app.winningBoard[i - 1][i - 1] = 0;
+        this.drawBoard(app.imageDiv);
+        this.shuffle();
+      },
+      drawBoard(div) {
+        div.innerHTML = "";
+        div.style.backgroundImage = "";
+        div.className = "obraz";
+
+        const table = document.createElement("table");
+        let counter = 0;
+        for (let j = 0; j < app.game.images; j++) {
+          const tr = document.createElement("tr");
+          for (let m = 0; m < app.game.images; m++) {
+            const td = document.createElement("td");
+            if (app.game.board[j][m] !== 0) {
+              td.setAttribute("id", counter);
+              td.style.backgroundSize = "300px 300px";
+              td.style.backgroundImage = app.game.src;
+              td.style.backgroundPosition = `${app.game.board[j][m][0]}px ${app.game.board[j][m][1]}px`;
+              td.style.width = `${app.game.size / app.game.images}px`;
+              td.style.height = `${app.game.size / app.game.images}px`;
+              td.onclick = (e) => {
+                app.directions.forEach((x) => {
+                  const id = parseInt(e.target.id);
+                  if (
+                    app.game.board[Math.floor(id / app.game.images) + x[0]]?.[
+                    (id % app.game.images) + x[1]
+                    ] === 0
+                  ) {
+                    app.game.board[Math.floor(id / app.game.images) + x[0]][
+                      (id % app.game.images) + x[1]
+                    ] =
+                      app.game.board[Math.floor(id / app.game.images)][
+                      id % app.game.images
+                      ];
+                    app.game.board[Math.floor(id / app.game.images)][
+                      id % app.game.images
+                    ] = 0;
+                    this.drawBoard(app.imageDiv);
+                  }
+                });
+                if (this.boardsAreEqual(app.game.board, app.winningBoard)) {
+                  alert("Mega big win");
+                  this.stopTimer();
+                }
+              };
+            }
+            tr.append(td);
+            counter++;
+          }
+          table.append(tr);
+        }
+        div.className = "";
+        div.append(table);
+      },
+      setImage(number) {
+        switch (number) {
+          case 0:
+            return "img/cyferki/c0.gif";
+          case 1:
+            return "img/cyferki/c1.gif";
+          case 2:
+            return "img/cyferki/c2.gif";
+          case 3:
+            return "img/cyferki/c3.gif";
+          case 4:
+            return "img/cyferki/c4.gif";
+          case 5:
+            return "img/cyferki/c5.gif";
+          case 6:
+            return "img/cyferki/c6.gif";
+          case 7:
+            return "img/cyferki/c7.gif";
+          case 8:
+            return "img/cyferki/c8.gif";
+          case 9:
+            return "img/cyferki/c9.gif";
+        }
+      },
+    };
+    app.generateButtons();
+  </script>
+</body>
+
+</html>
