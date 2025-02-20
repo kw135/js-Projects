@@ -1,0 +1,40 @@
+.cell{
+    width: 32px;
+    height: 32px;
+    border: 1px solid black;
+    margin: 0;
+    text-align: center;
+}
+#snakeTable{
+    margin: 0 auto;
+}
+#snakeHead{
+    background-color: red;
+    width: 32px;
+    height: 32px;
+}
+.img{
+    background-image: url("img/snake-graphics.png");
+    background-size: 160px 128px;
+    height: 32px;
+    width: 32px;
+}
+#scoreDiv{
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+}
+#btn1, #btn2{
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    background-color: rgb(36, 116, 36);
+    color: #1f1f1f;
+    font-weight: 600;
+    margin: 0 5px;
+}
+#container{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
