@@ -1,0 +1,171 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #232323;
+    margin: 0;
+    padding: 20px;
+}
+
+
+#mainCanvas {
+    border: 2px solid #232323;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 964.5px;
+    height: 400px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#settings {
+    padding: 30px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#playerSettings{
+    padding: 10px 30px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#settings div {
+    margin-bottom: 15px;
+}
+
+#settings select,
+input[type="text"] {
+    width: 220px;
+    padding: 12px;
+    background-color: #6CB4A3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+#settings select:hover,
+input[type="text"]:hover {
+    background-color: #5A9E8C;
+    
+}
+
+#settings label,
+#playerSettings label {
+    font-weight: bold;
+    color: #333;
+}
+
+#playerSettings {
+    border-left: 2px solid #e0e0e0;
+}
+
+#playerList {
+    display: flex;
+    flex-direction: column;
+}
+
+#text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+#startGame, #changeSettings{
+    width: 180px;
+    padding: 12px;
+    background-color: #6CB4A3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin: 10px 5px;
+    text-align: center;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+    user-select: none;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popupContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#closePopup {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #6CB4A3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#closePopup:hover {
+    background-color: #5A9E8C;
+}
+
+#gameInfo{
+    flex-direction: column;
+    text-align: center;
+    display: none;
+}
+#players{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+#scores{
+    margin-top: 10px;
+    font-size: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+.flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}

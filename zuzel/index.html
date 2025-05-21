@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="winPopup" class="popup">
+        <div class="popupContent">
+            <span id="winnerMessage"></span>
+            <button id="closePopup">zamknij</button>
+        </div>
+    </div>
+    <canvas id="mainCanvas" width="1000" height="400"></canvas>
+    <div class="container" id="container">
+        <div id="settings">
+            <div>
+                <label for="difficulty">Wybierz poziom trudności: </label><br />
+                <form action="">
+                    <select id="difficulty">
+                        <option value="easy">Łatwy</option>
+                        <option value="medium" selected>Średni</option>
+                        <option value="hard">Trudny</option>
+                    </select>
+                </form>
+            </div>
+            <div>
+                <label for="numberOfPlayers">Wybierz liczbę graczy: </label><br />
+                <form action="">
+                    <select id="numberOfPlayers">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </form>
+            </div>
+            <div>
+                <label for="numberOfLaps">Wybierz liczbę okrążeń: </label><br />
+                <form action="">
+                    <select id="numberOfLaps">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div id="playerSettings">
+            <p id="text">Liczba graczy: 1</p>
+            <div id="playerList">
+                <label for="playerName" style="color: red">Klawisz gracza 1 </label><br />
+                <input type="text" id="player1" value="a" />
+            </div>
+        </div>
+    </div>
+    <div class="container" id="gameInfo">
+        <h2>Okrążenia</h2>
+        <div id="players">
+        </div>
+        <div id="scores">
+        </div>
+    </div>
+    <div class="flex">
+        <div id="startGame">rozpocznij wyścig</div>
+        <div id="changeSettings" style="display: none;">zmień ustawienia</div>
+    </div>
+
+    <script src="js/main.js" type="module"></script>
+</body>
+
+</html>
